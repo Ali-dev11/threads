@@ -81,3 +81,46 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
 		throw new Error(`Failed to fetch posts: ${error.message}`)
 	}
 }
+
+export async function fetchThreadById(threadId: string) {
+	connectToDB()
+
+	try {
+		const thread = await Thread.findById(threadId)
+			.populate({
+				path: 'author',
+				model: User,
+				select: '_id id name image',
+			})
+			.populate({
+				path: 'community',
+				model: Community,
+				select: '_id id name image',
+			})
+			.populate({
+				path: 'children',
+				populate: [
+					{
+						path: 'author',
+						model: User,
+						select: '_id id name parentId image',
+					},
+					{
+						path: 'children',
+						model: Thread,
+						populate: {
+							path: 'author',
+							model: User,
+							select: '_id id name parentId image',
+						},
+					},
+				],
+			})
+			.exec()
+
+		return thread
+	} catch (err) {
+		console.error('Error while fetching thread:', err)
+		throw new Error('Unable to fetch thread')
+	}
+}
