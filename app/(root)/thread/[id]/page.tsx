@@ -24,7 +24,7 @@ async function page({params}: {params: {id: string}}) {
 		<section className='relative'>
 			<div>
 				<ThreadCard
-					id={thread._id}
+					id={JSON.stringify(thread?._id)}
 					currentUserId={user.id}
 					parentId={thread.parentId}
 					content={thread.text}
@@ -47,7 +47,7 @@ async function page({params}: {params: {id: string}}) {
 				{thread.children.map((childItem: any) => (
 					<ThreadCard
 						key={childItem._id}
-						id={childItem._id}
+						id={JSON.stringify(childItem._id)}
 						currentUserId={user.id}
 						parentId={childItem.parentId}
 						content={childItem.text}
